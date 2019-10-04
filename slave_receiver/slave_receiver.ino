@@ -1,6 +1,9 @@
 #include <Wire.h>
 #include <FastLED.h>
 #include <Arduino.h>
+#include <Packetizer.h>
+
+Packetizer::Unpacker unpacker;
 
 #define LED_CHAINS 35
 CRGB leds[LED_CHAINS];
@@ -12,9 +15,22 @@ void setup() {
   Serial.begin(9600);           // start serial for output
   FastLED.addLeds<WS2811, PIN, GRB>(leds, LED_CHAINS).setCorrection( TypicalLEDStrip );
   FastLED.setBrightness(16);
+
+  uint8_t index = 0x80;
+  unpacker.subscribe(0x01, callback);
+}
+
+void callback(const uint8_t* data, uint8_t size){
+  setAll(data[0], data[1], data[2]);
 }
 
 void loop() {
+  while (const int size = Serial.available())
+  {
+    uint8_t data[size];
+    Serial.readBytes((char *)data, size);
+    unpacker.feed(data, size);
+  }
   delay(100);
 }
 
