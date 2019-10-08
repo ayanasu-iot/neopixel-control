@@ -10,7 +10,7 @@ CRGB leds[LED_CHAINS];
 #define PIN 6
 
 void setup() {
-  Wire.begin(8);                // join i2c bus with address #8
+  Wire.begin(0x02);                // join i2c bus with address #8
   Wire.onReceive(receiveEvent); // register event
   Serial.begin(9600);           // start serial for output
   FastLED.addLeds<WS2811, PIN, GRB>(leds, LED_CHAINS).setCorrection( TypicalLEDStrip );
@@ -21,13 +21,16 @@ void setup() {
 }
 
 void callback(const uint8_t* data, uint8_t size){
+  Serial.print("Pixel:");
+  Serial.println((int)data[1]);
   Serial.print("R:");
-  Serial.print((int)data[0]);
+  Serial.println((int)data[1]);
   Serial.print("G:");
-  Serial.print((int)data[1]);
+  Serial.println((int)data[2]);
   Serial.print("B:");
-  Serial.print((int)data[2]);
-  setAll((int)data[0], (int)data[1], (int)data[2]);
+  Serial.println((int)data[3]);
+  setPixel((int)data[0], (int)data[1], (int)data[2], (int)data[3]);
+  showStrip();
 }
 
 void loop() {
