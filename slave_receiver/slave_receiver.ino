@@ -16,31 +16,29 @@ void setup() {
   FastLED.addLeds<WS2811, PIN, GRB>(leds, LED_CHAINS).setCorrection( TypicalLEDStrip );
   FastLED.setBrightness(16);
 
-  uint8_t index = 0x80;
-  unpacker.subscribe(0x01, callback);
+  uint8_t index = 10;
+  unpacker.subscribe(index, callback);
 }
 
 void callback(const uint8_t* data, uint8_t size){
-  setAll(data[0], data[1], data[2]);
+  Serial.print("R:");
+  Serial.print((int)data[0]);
+  Serial.print("G:");
+  Serial.print((int)data[1]);
+  Serial.print("B:");
+  Serial.print((int)data[2]);
+  setAll((int)data[0], (int)data[1], (int)data[2]);
 }
 
 void loop() {
-  while (const int size = Serial.available())
-  {
-    uint8_t data[size];
-    Serial.readBytes((char *)data, size);
-    unpacker.feed(data, size);
-  }
-  delay(100);
 }
 
 void receiveEvent(int howMany) {
-  while (1 < Wire.available()) { // loop through all but the last
-    char c = Wire.read(); // receive byte as a character
-    Serial.print(c);         // print the character
-  }
-  int x = Wire.read();    // receive byte as an integer
-  Serial.println(x);         // print the integer
+  while (const int size = Wire.available()){
+    uint8_t data[size];
+    Wire.readBytes((char*)data, size);
+    unpacker.feed(data, size);
+    }
 }
 
 void setPixel(int Pixel, byte red, byte green, byte blue) {

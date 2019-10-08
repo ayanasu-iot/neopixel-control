@@ -2,20 +2,22 @@
 #include <Arduino.h>
 #include <Packetizer.h>
 
-Packetizer::Packer packer;
+Packetizer::Packer packer(10);
 
 void setup() {
+  Serial.begin(9600);
   Wire.begin(); // join i2c bus (address optional for master)
+  send();
 }
 
-byte x = 0;
-
 void loop() {
-  Wire.beginTransmission(8); // transmit to device #8
-  packer.pack(100, 100, 100);
-  Wire.write(packer.data);
-  Wire.endTransmission(); // stop transmitting
+}
 
-  x++;
+void send(){
+  Wire.beginTransmission(8); // transmit to device #8
+  packer.pack(255, 0, 0);
+  Wire.write(packer.data(), packer.size());
+  Serial.write(packer.data(), packer.size());
+  Wire.endTransmission(); // stop transmitting
   delay(500);
 }
