@@ -10,7 +10,7 @@ CRGB leds[LED_CHAINS];
 #define PIN 6
 
 void setup() {
-  Wire.begin(0x03);                // join i2c bus with address #8
+  Wire.begin(0x03);             // join i2c bus with address #8
   Wire.onReceive(receiveEvent); // register event
   Serial.begin(9600);           // start serial for output
   FastLED.addLeds<WS2811, PIN, GRB>(leds, LED_CHAINS).setCorrection( TypicalLEDStrip );
